@@ -1,0 +1,38 @@
+###############################################################################
+#                          Generated on devops.io                          #
+###############################################################################
+version: "3.1"
+services:
+
+    mysql:
+      image: mysql:5.7
+      container_name: laravel-acl-mysql
+      working_dir: /application
+      volumes:
+        - ./infra:/application
+      environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=laravel_acl_db
+        - MYSQL_USER=root
+        - MYSQL_PASSWORD=root
+      ports:
+        - "7678:3306"
+
+    webserver:
+      image: nginx:alpine
+      container_name: laravel-acl-webserver
+      working_dir: /application
+      volumes:
+          - ./api:/application
+          - ./devops/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "7676:80"
+
+    php-fpm:
+      build: devops/php-fpm
+      container_name: laravel-acl-php-fpm
+      working_dir: /application
+      volumes:
+        - ./api:/application
+        - ./devops/php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
+
